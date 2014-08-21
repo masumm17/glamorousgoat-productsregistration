@@ -60,9 +60,9 @@ class GG_Product_Registration {
         // Unsinstall Hook
         register_uninstall_hook( $plugin_file, array( __CLASS__, 'uninstall' ) );
 
-        //if(  is_admin()){
-                //$adminHandler = new MHCF7DBEAdminView();
-        //}
+        if(  is_admin()){
+                $adminHandler = new GGPR_Admin_View($this->options);
+        }
         
         //Add all actions when all plugins are loaded
         add_action('plugins_loaded', array($this, 'site_plugins_loaded'), 100);
@@ -650,7 +650,7 @@ class GG_Product_Registration {
             'unknown_error'         => __("Unknown error occured. Pelase try again.", 'wpml_theme'),
             
             'admin_menu_title'      => __("Product Registration", 'wpml_theme'),
-            'admin_menu_page_title' => __("Product Registration", 'wpml_theme'),
+            'admin_search_title'    => __("Search", 'wpml_theme'),
             'search_by_code'        => __("Search by registration code", 'wpml_theme'),
             'search_by_data'        => __("Search by user data", 'wpml_theme'),
             'admin_confirm_text'    => __("Are you sure you want to edit these values?", 'wpml_theme'),
@@ -688,7 +688,7 @@ class GG_Product_Registration {
      * Run on plugin deactivation
      */
     function deactivate() {
-        //delete_option(GGPR_OPTION_NAME);
+        delete_option(GGPR_OPTION_NAME);
         do_action( 'ggpr_deactivate' );
     }
 

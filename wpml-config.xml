@@ -28,7 +28,7 @@
             <key name="unknown_error" />
             
             <key name="admin_menu_title" />
-            <key name="admin_menu_page_title" />
+            <key name="admin_search_title" />
             <key name="search_by_code" />
             <key name="search_by_data" />
             <key name="admin_confirm_text" />

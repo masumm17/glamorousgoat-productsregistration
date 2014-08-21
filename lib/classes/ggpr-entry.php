@@ -94,6 +94,7 @@ class GGPR_Entries {
         $query = "UPDATE " . GGPR_TABLE_NAME ." AS prc " . $set . $where;
         // Prepare the sql for database query
         $query = $wpdb->prepare($query, $format_values);
+
         // Get resutls from database
         return $wpdb->query($query);
     }

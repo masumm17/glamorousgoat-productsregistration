@@ -15,7 +15,7 @@ require_once( GGPR_LIB . 'functions.php' );
 if(  is_admin()){
     require_once( GGPR_LIB . 'classes/ggpr-admin-view.php' );
     require_once( GGPR_LIB . 'classes/ggpr-list-table.php' );
-    require_once( GGPR_LIB . 'classes/ggpr-leads-list-table.php' );
+    require_once( GGPR_LIB . 'classes/ggpr-prc-list-table.php' );
 }
 
 global $gg_product_registration;

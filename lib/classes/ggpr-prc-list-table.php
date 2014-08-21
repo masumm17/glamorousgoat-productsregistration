@@ -110,11 +110,11 @@ class GGRP_Product_List_Table extends GGPR_List_Table {
      * @return string
      */
     function column_RegistrationCode($item) {
-        $nonce = wp_create_nonce('ggpr-prc');
-        $item_data = '<strong><a title="Edit" href="'. add_query_arg(array('ggpr_action'=>'edit', 'ggpr_code'=>$item['RegistrationCode']), $this->admin_page_url) .'" class="row-title">'. $item['RegistrationCode'] .'</a></strong>';
+        $nonce = wp_create_nonce('ggpr-actions');
+        $item_data = '<strong><a title="Edit" href="'. add_query_arg(array('ggpr_action'=>'edit', 'ggpr_code'=>$item['RegistrationCode'], '_wpnonce'=>$nonce), $this->admin_page_url) .'" class="row-title">'. $item['RegistrationCode'] .'</a></strong>';
         $actions  = '<div class="row-actions">';
-        $actions .=   '<span class="edit"><a title="Edit" href="'. add_query_arg(array('ggpr_action'=>'edit', 'ggpr_code'=>$item['RegistrationCode']), $this->admin_page_url) .'" class="edit">Edit</a></span> | ';
-        $actions .=  ' <span class="trash"><a title="Empty" href="'. add_query_arg(array('ggpr_action'=>'delete', 'ggpr_code'=>$item['RegistrationCode'], '_wpnonce'=>$nonce), $this->admin_page_url) .'" class="submitdelete">Empty</a></span>';
+        $actions .=   '<span class="edit"><a title="Edit" href="'. add_query_arg(array('ggpr_action'=>'edit', 'ggpr_code'=>$item['RegistrationCode'], '_wpnonce'=>$nonce), $this->admin_page_url) .'" class="edit">Edit</a></span> | ';
+        $actions .=  ' <span class="trash"><a title="Empty" href="'. add_query_arg(array('ggpr_action'=>'empty', 'ggpr_code'=>$item['RegistrationCode'], '_wpnonce'=>$nonce), $this->admin_page_url) .'" class="submitdelete">Empty</a></span>';
         $actions .= '</div>';
         return $item_data.$actions;
     }

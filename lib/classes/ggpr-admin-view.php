@@ -92,6 +92,9 @@ class GGPR_Admin_View {
             if($this->show_search_result){
                 $this->search_result_page();
             }
+            if('edit' == $this->action){
+                $this->show_edit_page();
+            }
         }
         $this->wrap_close();
     }
@@ -142,7 +145,7 @@ class GGPR_Admin_View {
     ?>
     <div class="ggpr-search-form-wrap">
         <form class="ggpr-search-form" action="" method="post">
-            <?php wp_nonce_field('ggpr-search'); ?>
+            <?php wp_nonce_field('ggpr-actions'); ?>
             <input type="hidden" name="ggpr_action" value="search"/>
             <div class="ggpr-search-fields-wrap ggpr-group">
                 <div class="ggpr-col3">
@@ -232,24 +235,30 @@ class GGPR_Admin_View {
     </div>
     <?php
     }
-    
+    /**
+     * Search Result page
+     */
     public function search_result_page(){
     ?> 
-<div class="ggpr-search-result">
-    <h3><?php echo $this->get_option('search_results_title'); ?></h3>
-    <form method="post" action="" id="ggpr-list-form">
+    <div class="ggpr-search-result">
+        <h3><?php echo $this->get_option('search_results_title'); ?></h3>
+        <form method="post" action="" id="ggpr-list-form">
+        <?php
+        $list_table = new GGRP_Product_List_Table();
+        $list_table->admin_page_url = $this->admin_page_url;
+        $list_table->raw_items = $this->search_results;
+        $list_table->options = $this->options;
+        $list_table->prepare_items();
+        $list_table->display(); 
+
+        ?>
+        </form>
+    </div>
     <?php
-    $list_table = new GGRP_Product_List_Table();
-    $list_table->admin_page_url = $this->admin_page_url;
-    $list_table->raw_items = $this->search_results;
-    $list_table->options = $this->options;
-    $list_table->prepare_items();
-    $list_table->display(); 
+    }
     
-    ?>
-    </form>
-</div>
-    <?php
+    public function show_edit_page(){
+        
     }
     /**
      * perform actions
@@ -261,7 +270,7 @@ class GGPR_Admin_View {
         // Save the action
         $this->action = trim($_REQUEST['ggpr_action']);
         // Check nonce
-        if( empty($_REQUEST['_wpnonce']) || !wp_verify_nonce( $_REQUEST['_wpnonce'], 'ggpr-search')){
+        if( empty($_REQUEST['_wpnonce']) || !wp_verify_nonce( $_REQUEST['_wpnonce'], 'ggpr-actions')){
             wp_die(__('Are you sure you want to do this?', 'wpml_theme'));
             return;
         }
@@ -270,7 +279,12 @@ class GGPR_Admin_View {
             case 'search':
                 $this->search();
                 break;
-
+            case 'update': 
+                $this->update_product_data();
+                break;
+            case 'empty':
+                $this->empty_prodcut_data();
+                break;
         }
     }
     
@@ -358,6 +372,34 @@ class GGPR_Admin_View {
         $this->show_search_result = true;
         $this->search_results = $entry->search($this->search_data);
         return true;
+    }
+    
+    public function empty_prodcut_data(){
+        if(empty($_REQUEST['ggpr_code'])){
+            wp_redirect(add_query_arg('message', 92,$this->admin_page_url));
+            die();
+        }
+        $product_data = array(
+            'Name'          => '',
+            'IsUsed'        => 0,
+            'Address'       =>'',
+            'PostalCode'    =>'',
+            'City'          => '',
+            'Country'       => '',
+            'PhoneNo'       => '',
+            'EmailAddress'  => '',
+            'InvoiceNo'     => '',
+            'Supplier'      => '',
+            'DateOfPurchase'        => '',
+            'DateOfRegistration'    =>''
+        );
+        $entry = new GGPR_Entries();
+        if($entry->save_product_data($_REQUEST['ggpr_code'], $product_data)){
+            wp_redirect(add_query_arg('message', 93,$this->admin_page_url));
+            die();
+        }
+        wp_redirect(add_query_arg('message', 94,$this->admin_page_url));
+            die();
     }
     
     /**

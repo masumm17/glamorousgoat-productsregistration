@@ -1,0 +1,43 @@
+.ggpr-form-wrap .ggpr-selector{list-style: none;}
+.ggpr-form-wrap .ggpr-selector li{display: inline-block;width: 64px;margin-left: 5px;cursor: pointer;}
+.ggpr-form-wrap .ggpr-selector li:first-child {margin-left: 0;}
+.ggpr-form-wrap .ggpr-selector li.ggpr-selected,
+.ggpr-form-wrap .ggpr-selector li:hover{
+    border: 2px solid #ea9629;
+    box-shadow: 0 0 6px 0 #000;
+    width: 60px;
+}
+.ggpr-form-wrap .ggpr-selector li img{
+    border-radius: 0;
+    display: block;
+    width: 100%;
+}
+.ggpr-form-wrap .ggpr-selector li a{
+    outline: none;
+}
+
+.ggpr-field-wrap {
+    margin-bottom: 10px;
+}
+.ggpr-field .ggpr-code-field {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.ggpr-error {
+    border: 1px solid red!important;
+}
+.ggpr-code-used {
+    border: 1px solid #ea9629;
+}
+.ggpr-non-exists {
+    border:1px solid #bd831f;
+}
+.ggpr-regicodes {
+    background: none repeat scroll 0 0 #e5f2b1;
+    border-radius: 4px;
+    color: #6a6a6a;
+    display: inline-block;
+    margin-right: 5px;
+    padding: 2px 8px;
+}

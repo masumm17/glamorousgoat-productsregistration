@@ -1,0 +1,42 @@
+<wpml-config> 
+    <admin-texts>
+        <key name="ggpr_options">
+            <key name="regi_code" />
+            <key name="is_used" />
+            <key name="name" />
+            <key name="address" />
+            <key name="postal_code" />
+            <key name="city" />
+            <key name="country" />
+            <key name="phone_no" />
+            <key name="emai" />
+            <key name="invoice_no" />
+            <key name="supplier" />
+            <key name="purchase_date" />
+            <key name="regi_date" />
+            <key name="submit" />
+            
+            <key name="no_code_entered" />
+            <key name="code_empty" />
+            <key name="code_duplicate" />
+            <key name="code_exist" />
+            <key name="code_used" />
+            
+            <key name="field_error" />
+            <key name="bad_email" />
+            <key name="bad_phone" />
+            <key name="unknown_error" />
+            
+            <key name="admin_menu_title" />
+            <key name="admin_menu_page_title" />
+            <key name="search_by_code" />
+            <key name="search_by_data" />
+            <key name="admin_confirm_text" />
+            <key name="admin_confirm" />
+            
+            <key name="thanks" />
+            <key name="saved" />
+            <key name="save_error" />
+        </key>
+    </admin-texts>  
+</wpml-config>

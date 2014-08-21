@@ -261,6 +261,7 @@ class GGPR_Admin_View {
     public function search_result_page(){
     ?> 
     <div class="ggpr-search-result">
+        <?php if($this->search_results){ ?>
         <h3><?php echo $this->get_option('search_results_title'); ?></h3>
         <form method="post" action="" id="ggpr-list-form">
         <?php
@@ -273,6 +274,9 @@ class GGPR_Admin_View {
 
         ?>
         </form>
+        <?php }else{?>
+        <p class="warning"><?php echo $this->get_option('nothing_found'); ?></p>
+        <?php } ?>
     </div>
     <?php
     }
@@ -295,6 +299,12 @@ class GGPR_Admin_View {
             <input type="hidden" name="ggpr_code" value="<?php echo esc_attr($product_data['RegistrationCode']); ?>"/>
             <div class="ggpr-search-fields-wrap ggpr-group">
                 <div class="ggpr-col3">
+                    <div class="ggpr-field-wrap ggpr-group">
+                        <label><?php echo $this->get_option('regi_code'); ?></label>
+                        <div class="ggpr-field">
+                            <strong><?php echo esc_attr($_REQUEST['ggpr_code']); ?></strong>
+                        </div>
+                    </div>
                     <div class="ggpr-field-wrap ggpr-group">
                         <label for="ggpr_name"><?php echo $this->get_option('name'); ?></label>
                         <div class="ggpr-field">
@@ -587,7 +597,8 @@ class GGPR_Admin_View {
         );
         $entry = new GGPR_Entries();
         if($entry->save_product_data($_REQUEST['ggpr_code'], $product_data)){
-            wp_redirect(add_query_arg('message', 93,$this->admin_page_url));
+            wp_redirect(add_query_arg(array('message'=>93, 'ggpr_action'=>'edit','ggpr_code'=>$_GET['ggpr_code']) ,$this->admin_page_url));
+            
             die();
         }
         wp_redirect(add_query_arg('message', 94,$this->admin_page_url));

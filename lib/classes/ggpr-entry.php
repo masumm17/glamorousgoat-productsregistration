@@ -58,7 +58,7 @@ class GGPR_Entries {
         $query = $wpdb->prepare($query, $format_values);
         
         $results = $wpdb->get_results($query, ARRAY_A);
-        
+       
         if(empty($results))
             return false;
         return $results;

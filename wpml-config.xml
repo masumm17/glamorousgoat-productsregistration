@@ -3,6 +3,7 @@
         <key name="ggpr_options">
             <key name="regi_code" />
             <key name="is_used" />
+            <key name="not_used" />
             <key name="name" />
             <key name="address" />
             <key name="postal_code" />
@@ -29,15 +30,21 @@
             
             <key name="admin_menu_title" />
             <key name="admin_search_title" />
+            <key name="admin_edit_title" />
             <key name="search_by_title" />
             <key name="search_results_title" />
             
             <key name="admin_confirm_text" />
             <key name="admin_confirm" />
-            
             <key name="thanks" />
-            <key name="saved" />
-            <key name="save_error" />
+            <key name="admin_updated_success" />
+            <key name="admin_updated_failed" />
+            <key name="admin_code_changed" />
+            <key name="admin_empty_success" />
+            <key name="admin_empty_failed" />
+            <key name="admin_empty_code" />
+            <key name="admin_empty_sf" />
+            <key name="nothing_found" />
         </key>
     </admin-texts>  
 </wpml-config>

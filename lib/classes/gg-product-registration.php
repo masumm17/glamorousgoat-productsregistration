@@ -624,41 +624,41 @@ class GG_Product_Registration {
      */
     public function default_options(){
         return array(
-            'regi_code'             => __("Registration Code"),
-            'is_used'               => __("Is Used"),
-            'name'                  => __("Name"),
-            'address'               => __("Address"),
-            'postal_code'           => __("Postal Code"),
-            'city'                  => __("City"),
-            'country'               => __("Country"),
-            'phone_no'              => __("Phone No."),
-            'emai'                  => __("Email Address"),
-            'invoice_no'            => __("Invoice No."),
-            'supplier'              => __("Supplier"),
-            'purchase_date'         => __("Date of Purchase"),
-            'regi_date'             => __("Date of Registration"),
-            'submit'                => __("Submit"),
+            'regi_code'             => __("Registration Code", 'wpml_theme'),
+            'is_used'               => __("Is Used", 'wpml_theme'),
+            'name'                  => __("Name", 'wpml_theme'),
+            'address'               => __("Address", 'wpml_theme'),
+            'postal_code'           => __("Postal Code", 'wpml_theme'),
+            'city'                  => __("City", 'wpml_theme'),
+            'country'               => __("Country", 'wpml_theme'),
+            'phone_no'              => __("Phone No.", 'wpml_theme'),
+            'emai'                  => __("Email Address", 'wpml_theme'),
+            'invoice_no'            => __("Invoice No.", 'wpml_theme'),
+            'supplier'              => __("Supplier", 'wpml_theme'),
+            'purchase_date'         => __("Date of Purchase", 'wpml_theme'),
+            'regi_date'             => __("Date of Registration", 'wpml_theme'),
+            'submit'                => __("Submit", 'wpml_theme'),
             
-            'no_code_entered'       => __("No product registration code entered."),
-            'code_empty'            => __("Product registration code fields (highlighted) must not be empty."),
-            'code_duplicate'        => __("Product registration codes (highlighted) must not be duplicated."),
-            'code_exist'            => __("Product registration code (highlighted) does not exist."),
-            'code_used'             => __("Product registration code (highlighted) is used."),
-            'field_error'           => __("Please fix the highlighted fields"),
-            'bad_email'             => __("Please enter a valid email address"),
-            'bad_phone'             => __("Please enter a valide phone number"),
-            'unknown_error'         => __("Unknown error occured. Pelase try again."),
+            'no_code_entered'       => __("No product registration code entered.", 'wpml_theme'),
+            'code_empty'            => __("Product registration code fields (highlighted) must not be empty.", 'wpml_theme'),
+            'code_duplicate'        => __("Product registration codes (highlighted) must not be duplicated.", 'wpml_theme'),
+            'code_exist'            => __("Product registration code (highlighted) does not exist.", 'wpml_theme'),
+            'code_used'             => __("Product registration code (highlighted) is used.", 'wpml_theme'),
+            'field_error'           => __("Please fix the highlighted fields", 'wpml_theme'),
+            'bad_email'             => __("Please enter a valid email address", 'wpml_theme'),
+            'bad_phone'             => __("Please enter a valide phone number", 'wpml_theme'),
+            'unknown_error'         => __("Unknown error occured. Pelase try again.", 'wpml_theme'),
             
-            'admin_menu_title'      => __("Product Registration"),
-            'admin_menu_page_title' => __("Product Registration"),
-            'search_by_code'        => __("Search by registration code"),
-            'search_by_data'        => __("Search by user data"),
-            'admin_confirm_text'    => __("Are you sure you want to edit these values?"),
-            'admin_confirm'         => __("Yes, Update please"),
+            'admin_menu_title'      => __("Product Registration", 'wpml_theme'),
+            'admin_menu_page_title' => __("Product Registration", 'wpml_theme'),
+            'search_by_code'        => __("Search by registration code", 'wpml_theme'),
+            'search_by_data'        => __("Search by user data", 'wpml_theme'),
+            'admin_confirm_text'    => __("Are you sure you want to edit these values?", 'wpml_theme'),
+            'admin_confirm'         => __("Yes, Update please", 'wpml_theme'),
             
-            'thanks'                => __("Thank you for rgeistaring your product."),
-            'saved'                 => __("Saved succesfully!"),
-            'save_error'            => __("Data could not be saved. Please try later")
+            'thanks'                => __("Thank you for rgeistaring your product.", 'wpml_theme'),
+            'saved'                 => __("Saved succesfully!", 'wpml_theme'),
+            'save_error'            => __("Data could not be saved. Please try later", 'wpml_theme')
             
         );
     }
@@ -688,7 +688,7 @@ class GG_Product_Registration {
      * Run on plugin deactivation
      */
     function deactivate() {
-        //delete_option(GGPR_OPTION_NAME);
+        delete_option(GGPR_OPTION_NAME);
         do_action( 'ggpr_deactivate' );
     }
 

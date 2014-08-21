@@ -51,6 +51,7 @@
     box-sizing: border-box;
     padding: 5px 8px;
 }
+.ggpr-field textarea {resize: vertical;}
 .ggpr-submit-wrap {
     text-align: right;
 }
@@ -66,4 +67,7 @@
 
 .wp-list-table .column-RegistrationCode {
     width: 76px;
+}
+.ggpr-edit-form-wrap {
+    margin-top: 15px;
 }

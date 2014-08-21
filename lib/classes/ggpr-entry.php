@@ -2,7 +2,21 @@
 
 class GGPR_Entries {
     
+    public function get_prodcut_data($code){
+        global $wpdb;
+        $query = $wpdb->prepare("SELECT prc.* FROM " . GGPR_TABLE_NAME ." AS prc WHERE (1=1) AND (prc.RegistrationCode=%s)", $code);
     
+        return $wpdb->get_row($query, ARRAY_A);;
+    }
+    
+    /**
+     * Search for product
+     * @global obj $wpdb
+     * @param type $data
+     * @param type $number
+     * @param type $offset
+     * @return boolean
+     */
     public function search($data, $number=100, $offset=0){
         if(!is_array($data))
             return false;
@@ -94,7 +108,7 @@ class GGPR_Entries {
         $query = "UPDATE " . GGPR_TABLE_NAME ." AS prc " . $set . $where;
         // Prepare the sql for database query
         $query = $wpdb->prepare($query, $format_values);
-
+        
         // Get resutls from database
         return $wpdb->query($query);
     }

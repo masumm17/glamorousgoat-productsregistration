@@ -652,6 +652,7 @@ class GG_Product_Registration {
             
             'admin_menu_title'      => __("Product Registration", 'wpml_theme'),
             'admin_search_title'    => __("Search", 'wpml_theme'),
+            'admin_edit_title'      => __("Edit Product Registraion Data", 'wpml_theme'),
             'search_by_title'       => __("Search by any of the following fields", 'wpml_theme'),
             'search_results_title'  => __("The following Products found", 'wpml_theme'),
             
@@ -659,8 +660,13 @@ class GG_Product_Registration {
             'admin_confirm'         => __("Yes, Update please", 'wpml_theme'),
             
             'thanks'                => __("Thank you for rgeistaring your product.", 'wpml_theme'),
-            'saved'                 => __("Saved succesfully!", 'wpml_theme'),
-            'save_error'            => __("Data could not be saved. Please try later", 'wpml_theme')
+            'admin_updated_success' => __("Saved succesfully!", 'wpml_theme'),
+            'admin_updated_failed'  => __("Data could not be saved. Please try later", 'wpml_theme'),
+            'admin_code_changed'    => __("You can not change the product registration codes.", 'wpml_theme'),
+            'admin_empty_success'   => __("Product registraion code row is emptied succesfully!", 'wpml_theme'),
+            'admin_empty_failed'    => __("Product registraion code row could not be emptied. Please try later", 'wpml_theme'),
+            'admin_empty_code'      => __("No product registraion code found.", 'wpml_theme'),
+            'admin_empty_sf'        => __("You must enter atleast one value.", 'wpml_theme')
             
         );
     }

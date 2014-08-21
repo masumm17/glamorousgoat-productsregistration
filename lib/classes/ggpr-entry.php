@@ -1,6 +1,37 @@
 <?php
 
 class GGPR_Entries {
+    
+    
+    public function search($data){
+        if(!is_array($data))
+            return false;
+        
+        global $wpdb;
+        $format_values = array();
+        $place_holders = array();
+        // Prepare WHERE Place holder and values
+        foreach ($data as $col_name=>$serach_for){
+            if(empty($serach_for))
+                continue;
+            if('IsUsed' == $col_name){
+                $place_holders[] = "(prc.IsUsed=%d)";
+            }else{
+                $place_holders[] = "(prc.{$col_name}=%s)";
+            }
+            $format_values[] = $serach_for;
+        }
+        if(empty($format_values))
+            return false;
+        $place_holders = implode(' AND ', $place_holders);
+        $where = " WHERE (1=1) AND " . $place_holders;
+        $query = "SELECT prc.* FROM ". GGPR_TABLE_NAME ." AS prc " . $where;
+        var_dump($query);
+        $query = $wpdb->prepare($query, $format_values);
+        var_dump($query);die();
+        $results = $wpdb->get_col($query);
+    }
+
     public function get_product_data($col_search = array()){
         global $wpdb;
         // Check if any of the column is provided

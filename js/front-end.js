@@ -14,7 +14,6 @@
             for(i=0;i<fields;i++){
                 html = html + '<input class="ggpr-code-field" type="text" id="ggpr_product_regi_codes_' + i + '" name="ggpr_product_regi_codes[' + i + ']" value=""/>';
             }
-            console.log(html);
             $form.find('.ggpr-form-inner').html(fwo+html+fwc);
             $form.show(300);
         });

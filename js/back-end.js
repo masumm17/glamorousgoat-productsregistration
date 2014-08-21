@@ -13,7 +13,7 @@
                 submit = true;
             }
             if(!submit){
-                e.preventDefault();
+                //e.preventDefault();
             }
         });
     });

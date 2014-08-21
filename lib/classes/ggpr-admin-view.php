@@ -7,6 +7,7 @@ class GGPR_Admin_View {
     
     public $options;
     public $search_data;
+    public $search_results;
     /**
      * Constructor of the class
      * Do some inital tasks when instantiated
@@ -28,7 +29,9 @@ class GGPR_Admin_View {
      * Initiate valriables
      */
     public function variables(){
+        $this->admin_page_url = add_query_arg(array('page'=>GGPR_ADMIN_MENU_SLUG),get_admin_url(false, '/admin.php'));
         $this->current_page = 'main';
+        $this->action ='';
         $this->search_data = array(
             'RegistrationCode'  => '',
             'Name'          => '',
@@ -44,6 +47,7 @@ class GGPR_Admin_View {
             'DateOfPurchase'        => '',
             'DateOfRegistration'    =>''
         );
+        $this->search_results = array();
     }
     
     /**
@@ -51,12 +55,17 @@ class GGPR_Admin_View {
      */
     public function init(){
         if( isset($_REQUEST['page'])){
-                if( GGPR_ADMIN_MENU_SLUG == $_REQUEST['page'] ){
-                        $this->current_page = 'main';
-                }elseif(GGPR_ADMIN_SEARCH_SLUG == $_REQUEST['page']){
-                        $this->current_page = 'search';
-                }
+            if( GGPR_ADMIN_MENU_SLUG == $_REQUEST['page'] ){
+                    $this->current_page = 'main';
+                    $query_parts['page'] = GGPR_ADMIN_MENU_SLUG;
+            }elseif(GGPR_ADMIN_SEARCH_SLUG == $_REQUEST['page']){
+                    $this->current_page = 'search';
+                    $query_parts['page'] = GGPR_ADMIN_SEARCH_SLUG;
+            }
         }
+        
+        $this->admin_page_url = add_query_arg($query_parts,get_admin_url(false, '/admin.php'));
+        $this->perform_action();
     }
     /**
     * Add a top level admin menu
@@ -127,7 +136,8 @@ class GGPR_Admin_View {
     ?>
 <div class="ggpr-search-form-wrap">
     <form class="ggpr-search-form" action="" method="post">
-        <?php wp_nonce_field('ggpr-searc'); ?>
+        <?php wp_nonce_field('ggpr-search'); ?>
+        <input type="hidden" name="ggpr_action" value="search"/>
         <div class="ggpr-search-fields-wrap ggpr-group">
             <div class="ggpr-col3">
                 <div class="ggpr-field-wrap ggpr-group">
@@ -220,6 +230,109 @@ class GGPR_Admin_View {
     </form>
 </div>
     <?php
+    }
+    /**
+     * perform actions
+     */
+    public function perform_action(){
+        if(empty($_REQUEST['ggpr_action'])){
+            return;
+        }
+        // Save the action
+        $this->action = trim($_REQUEST['ggpr_action']);
+        // Check nonce
+        if( empty($_REQUEST['_wpnonce']) || !wp_verify_nonce( $_REQUEST['_wpnonce'], 'ggpr-search')){
+            wp_die(__('Are you sure you want to do this?', 'wpml_theme'));
+            return;
+        }
+        
+        switch($this->action){
+            case 'search':
+                $this->search();
+                break;
+
+        }
+    }
+    
+    public function search(){
+        $entry = new GGPR_Entries();
+        $this->search_data = array(
+            'RegistrationCode'  => '',
+            'Name'          => '',
+            'IsUsed'        => '',
+            'Address'       =>'',
+            'PostalCode'    =>'',
+            'City'          => '',
+            'Country'       => '',
+            'PhoneNo'       => '',
+            'EmailAddress'  => '',
+            'InvoiceNo'     => '',
+            'Supplier'      => '',
+            'DateOfPurchase'        => '',
+            'DateOfRegistration'    =>''
+        );
+        $do_search = false;
+        
+        if(!empty($_POST['ggpr_code'])){
+            $this->search_data['RegistrationCode'] = $_POST['ggpr_code'];
+            $do_search = true;
+        }
+        if(!empty($_POST['ggpr_name'])){
+            $this->search_data['Name'] = $_POST['ggpr_name'];
+            $do_search = true;
+        }
+        if(!empty($_POST['ggpr_used'])){
+            $this->search_data['IsUsed'] = 1;
+            $do_search = true;
+        }
+        if(!empty($_POST['ggpr_address'])){
+            $this->search_data['Address'] = $_POST['ggpr_address'];
+            $do_search = true;
+        }
+        if(!empty($_POST['ggpr_post_code'])){
+            $this->search_data['PostalCode'] = $_POST['ggpr_post_code'];
+            $do_search = true;
+        }
+        if(!empty($_POST['ggpr_city'])){
+            $this->search_data['City'] = $_POST['ggpr_city'];
+            $do_search = true;
+        }
+        if(!empty($_POST['ggpr_code'])){
+            $this->search_data['Country'] = $_POST['ggpr_country'];
+            $do_search = true;
+        }
+        if(!empty($_POST['ggpr_phone'])){
+            $this->search_data['PhoneNo'] = $_POST['ggpr_phone'];
+            $do_search = true;
+        }
+        if(!empty($_POST['ggpr_email'])){
+            $this->search_data['EmailAddress'] = $_POST['ggpr_email'];
+            $do_search = true;
+        }
+        if(!empty($_POST['ggpr_invoice_no'])){
+            $this->search_data['InvoiceNo'] = $_POST['ggpr_invoice_no'];
+            $do_search = true;
+        }
+        if(!empty($_POST['ggpr_supplier'])){
+            $this->search_data['Supplier'] = $_POST['ggpr_supplier'];
+            $do_search = true;
+        }
+        if(!empty($_POST['ggpr_dop'])){
+            $this->search_data['DateOfPurchase'] = $_POST['ggpr_dop'];
+            $do_search = true;
+        }
+        if(!empty($_POST['ggpr_dor'])){
+            $this->search_data['DateOfRegistration'] = $_POST['ggpr_dor'];
+            $do_search = true;
+        }
+        // Check if every field is empty
+        if(!$do_search){
+            wp_redirect(add_query_arg('message', 91,$this->admin_page_url));
+            die();
+        }
+        // Get results
+        $this->search_results = $entry->search($this->search_data);
+        
     }
     
     /**

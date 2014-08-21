@@ -63,3 +63,7 @@
     padding: 9px 0;
     width: 60%;
 }
+
+.wp-list-table .column-RegistrationCode {
+    width: 76px;
+}

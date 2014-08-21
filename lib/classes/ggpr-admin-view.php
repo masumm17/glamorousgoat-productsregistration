@@ -165,27 +165,14 @@ class GGPR_Admin_View {
                         </div>
                     </div>
                     <div class="ggpr-field-wrap ggpr-group">
-                        <div class="ggpr-col2">
-                            <label for="ggpr_used"><?php echo $this->get_option('is_used'); ?></label>
-                            <div class="ggpr-field">
-                                <input type="checkbox" id="ggpr_used" name="ggpr_used" value="1" <?php checked(1, $this->search_data['IsUsed']); ?>/>
-                            </div>
-                        </div>
-                        <div class="ggpr-col2">
-                            <label for="ggpr_not_used"><?php echo $this->get_option('not_used'); ?></label>
-                            <div class="ggpr-field">
-                                <input type="checkbox" id="ggpr_not_used" name="ggpr_not_used" value="1" <?php checked(1, $this->search_data['NotUsed']); ?>/>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="ggpr-col3">
-                    <div class="ggpr-field-wrap ggpr-group">
                         <label for="ggpr_post_code"><?php echo $this->get_option('postal_code'); ?></label>
                         <div class="ggpr-field">
                             <input type="text" id="ggpr_post_code" name="ggpr_post_code" value="<?php echo esc_attr($this->search_data['PostalCode']); ?>"/>
                         </div>
                     </div>
+
+                </div>
+                <div class="ggpr-col3">
                     <div class="ggpr-field-wrap ggpr-group">
                         <label for="ggpr_city"><?php echo $this->get_option('city'); ?></label>
                         <div class="ggpr-field">
@@ -210,14 +197,14 @@ class GGPR_Admin_View {
                             <input type="text" id="ggpr_email" name="ggpr_email" value="<?php echo esc_attr($this->search_data['EmailAddress']); ?>"/>
                         </div>
                     </div>
-                </div>
-                <div class="ggpr-col3">
                     <div class="ggpr-field-wrap ggpr-group">
                         <label for="ggpr_invoice_no"><?php echo $this->get_option('invoice_no'); ?></label>
                         <div class="ggpr-field">
                             <input type="text" id="ggpr_invoice_no" name="ggpr_invoice_no" value="<?php echo esc_attr($this->search_data['InvoiceNo']); ?>"/>
                         </div>
                     </div>
+                </div>
+                <div class="ggpr-col3">
                     <div class="ggpr-field-wrap ggpr-group">
                         <label for="ggpr_supplier"><?php echo $this->get_option('supplier'); ?></label>
                         <div class="ggpr-field">
@@ -250,7 +237,17 @@ class GGPR_Admin_View {
     ?> 
 <div class="ggpr-search-result">
     <h3><?php echo $this->get_option('search_results_title'); ?></h3>
-    <?php var_dump($this->search_results); ?>
+    <form method="post" action="" id="ggpr-list-form">
+    <?php
+    $list_table = new GGRP_Product_List_Table();
+    $list_table->admin_page_url = $this->admin_page_url;
+    $list_table->raw_items = $this->search_results;
+    $list_table->options = $this->options;
+    $list_table->prepare_items();
+    $list_table->display(); 
+    
+    ?>
+    </form>
 </div>
     <?php
     }

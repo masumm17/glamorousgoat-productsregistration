@@ -29,8 +29,9 @@
             
             <key name="admin_menu_title" />
             <key name="admin_search_title" />
-            <key name="search_by_code" />
-            <key name="search_by_data" />
+            <key name="search_by_title" />
+            <key name="search_results_title" />
+            
             <key name="admin_confirm_text" />
             <key name="admin_confirm" />
             

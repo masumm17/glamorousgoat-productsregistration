@@ -1,43 +1,54 @@
-.ggpr-form-wrap .ggpr-selector{list-style: none;}
-.ggpr-form-wrap .ggpr-selector li{display: inline-block;width: 64px;margin-left: 5px;cursor: pointer;}
-.ggpr-form-wrap .ggpr-selector li:first-child {margin-left: 0;}
-.ggpr-form-wrap .ggpr-selector li.ggpr-selected,
-.ggpr-form-wrap .ggpr-selector li:hover{
-    border: 2px solid #ea9629;
-    box-shadow: 0 0 6px 0 #000;
-    width: 60px;
+.ggpr-group {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
 }
-.ggpr-form-wrap .ggpr-selector li img{
-    border-radius: 0;
-    display: block;
-    width: 100%;
+.ggpr-group:after {
+    content: "";
+    display: table;
+    clear: both;
 }
-.ggpr-form-wrap .ggpr-selector li a{
-    outline: none;
+.ggpr-col3{
+    box-sizing: border-box;
+    margin-right: 2%;
+    width: 32%;
+    float: left;
 }
-
+.ggpr-col3:nth-child(3n){
+    margin-right: 0;
+}
+.ggpr-search-form-wrap {
+    border: 2px solid #ccc;
+    margin: 15px 0;
+    padding: 15px;
+}
 .ggpr-field-wrap {
     margin-bottom: 10px;
 }
-.ggpr-field .ggpr-code-field {
+.ggpr-field-wrap label {
+    float: left;
+    width: 38%;
+}
+.ggpr-field{
+    float: left;
+    width: 60%;
+    margin-left: 2%;
+}
+.ggpr-field input[type="text"], .ggpr-field textarea {
+    width: 100%;
     display: block;
-    margin-bottom: 5px;
+    box-sizing: border-box;
+    padding: 5px 8px;
 }
-
-.ggpr-error {
-    border: 1px solid red!important;
+.ggpr-submit-wrap {
+    text-align: right;
 }
-.ggpr-code-used {
-    border: 1px solid #ea9629;
-}
-.ggpr-non-exists {
-    border:1px solid #bd831f;
-}
-.ggpr-regicodes {
-    background: none repeat scroll 0 0 #e5f2b1;
-    border-radius: 4px;
-    color: #6a6a6a;
+.ggpr-submit-wrap .ggpr-submit {
+    background: none repeat scroll 0 0 #0074a2;
+    border: 0 none;
+    color: #fff;
+    cursor: pointer;
     display: inline-block;
-    margin-right: 5px;
-    padding: 2px 8px;
+    padding: 9px 0;
+    width: 60%;
 }

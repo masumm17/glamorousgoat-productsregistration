@@ -594,7 +594,7 @@ class GG_Product_Registration {
         
         if($this->product_data_validated){
             $this->product_regi_data['IsUsed'] = 1;
-            $this->product_regi_data['DateOfRegistration'] = date('Y-m-d H:i:s');
+            $this->product_regi_data['DateOfRegistration'] = date('Y-m-d');
             return true;
         }
         
@@ -651,8 +651,9 @@ class GG_Product_Registration {
             
             'admin_menu_title'      => __("Product Registration", 'wpml_theme'),
             'admin_search_title'    => __("Search", 'wpml_theme'),
-            'search_by_code'        => __("Search by registration code", 'wpml_theme'),
-            'search_by_data'        => __("Search by user data", 'wpml_theme'),
+            'search_by_title'       => __("Search by any of the following fields", 'wpml_theme'),
+            'search_results_title'  => __("The following Products found", 'wpml_theme'),
+            
             'admin_confirm_text'    => __("Are you sure you want to edit these values?", 'wpml_theme'),
             'admin_confirm'         => __("Yes, Update please", 'wpml_theme'),
             

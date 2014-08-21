@@ -71,3 +71,14 @@
 .ggpr-edit-form-wrap {
     margin-top: 15px;
 }
+.ggpr-options-fields-wrap {
+    margin-top: 15px;
+    max-width: 567px;
+    width: 100%;
+}
+.ggpr-options-fields-wrap .ggpr-field-wrap label{
+    width: 28%;
+}
+.ggpr-options-fields-wrap .ggpr-field,.ggpr-options-fields-wrap .ggpr-submit-wrap .ggpr-submit{
+    width: 70%;
+}

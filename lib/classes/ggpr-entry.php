@@ -6,7 +6,14 @@ class GGPR_Entries {
         global $wpdb;
         $query = $wpdb->prepare("SELECT prc.* FROM " . GGPR_TABLE_NAME ." AS prc WHERE (1=1) AND (prc.RegistrationCode=%s)", $code);
     
-        return $wpdb->get_row($query, ARRAY_A);;
+        $product_data =  $wpdb->get_row($query, ARRAY_A);;
+        if(isset($product_data['DateOfPurchase']) && $product_data['DateOfPurchase'] == '0000-00-00'){
+            $product_data['DateOfPurchase'] = '';
+        }
+        if(isset($product_data['DateOfRegistration']) && $product_data['DateOfRegistration'] == '0000-00-00'){
+            $product_data['DateOfRegistration'] = '';
+        }
+        return $product_data;
     }
     
     /**
@@ -21,10 +28,10 @@ class GGPR_Entries {
         if(!is_array($data))
             return false;
         
-        if($data['IsUsed'] == $data['NotUsed']){
-            $data['IsUsed'] = $data['NotUsed'] ='';
-        }
-        
+//        if( isset($data['NotUsed']) && ($data['IsUsed'] == $data['NotUsed'])){
+//            $data['IsUsed'] = $data['NotUsed'] ='';
+//        }
+//        
         global $wpdb;
         $format_values = array();
         $place_holders = array();
@@ -32,7 +39,7 @@ class GGPR_Entries {
         foreach ($data as $col_name=>$serach_for){
             if(empty($serach_for))
                 continue;
-            if(('IsUsed' == $col_name) || ('NotUsed' == $col_name)){
+            if(('IsUsed' == $col_name)){
                 $place_holders[] = "(prc.IsUsed=%d)";
             }else{
                 $place_holders[] = "(prc.{$col_name}=%s)";
@@ -50,7 +57,9 @@ class GGPR_Entries {
         
         $place_holders = implode(' AND ', $place_holders);
         $where = " WHERE (1=1) AND " . $place_holders;
-        $limit = " LIMIT {$offset}, {$number}";
+        
+        $limit = "";
+        //$limit = " LIMIT {$offset}, {$number}";
         
         $query = "SELECT prc.* FROM ". GGPR_TABLE_NAME ." AS prc " . $where . $limit;
         
@@ -61,6 +70,15 @@ class GGPR_Entries {
        
         if(empty($results))
             return false;
+        foreach ($results as $k=>$a){
+            if(isset($a['DateOfPurchase']) && $a['DateOfPurchase'] == '0000-00-00'){
+                $a['DateOfPurchase'] = '';
+            }
+            if(isset($a['DateOfRegistration']) && $a['DateOfRegistration'] == '0000-00-00'){
+                $a['DateOfRegistration'] = '';
+            }
+            $results[$k] = $a;
+        }
         return $results;
     }
 

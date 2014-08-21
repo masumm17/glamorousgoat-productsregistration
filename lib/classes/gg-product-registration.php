@@ -433,6 +433,16 @@ class GG_Product_Registration {
                  $this->messages[] = '<p class="error">'. $this->get_option('unknown_error') .'</p>';
             }
             $this->product_data_saved = true;
+            // Send a mail to user
+            $mail_to = "{$this->product_regi_data['Name']} <{$this->product_regi_data['EmailAddress']}>";
+            $mail_form = !empty($this->options['mail_from'])?$this->options['mail_from']:get_option('admin_email');
+            $headers = "From: Admin <{$mail_form}>" . "\r\n";
+            
+            $subject = $this->get_option('mail_subject');
+            $message = $this->get_option('mail_body');
+            
+            wp_mail($mail_to, $subject, $message, $headers);
+            
             // Data saved Successfully.
             // Now time to thanks the user
             if($redirect_url){
@@ -624,6 +634,10 @@ class GG_Product_Registration {
      */
     public function default_options(){
         return array(
+            'mail_subject'          => "Product registered!",
+            'mail_body'             => "Thank you for registering your product",
+            'mail_from'             => get_option('admin_email'),
+            
             'regi_code'             => __("Registration Code", 'wpml_theme'),
             'is_used'               => __("Used", 'wpml_theme'),
             'not_used'               => __("Not Used", 'wpml_theme'),
@@ -666,7 +680,7 @@ class GG_Product_Registration {
             'admin_empty_failed'    => __("Product registraion code row could not be emptied. Please try later", 'wpml_theme'),
             'admin_empty_code'      => __("No product registraion code found.", 'wpml_theme'),
             'admin_empty_sf'        => __("You must enter atleast one value.", 'wpml_theme'),
-            'nothing_found'         => 'No data found.'
+            'nothing_found'         => __("No data found.'", 'wpml_theme')
             
         );
     }

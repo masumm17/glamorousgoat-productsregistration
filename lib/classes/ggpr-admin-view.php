@@ -57,6 +57,7 @@ class GGPR_Admin_View {
      * Initiate Admin view
      */
     public function init(){
+        $query_parts = array();
         if( isset($_REQUEST['page'])){
             if( GGPR_ADMIN_MENU_SLUG == $_REQUEST['page'] ){
                     $this->current_page = 'main';
@@ -86,7 +87,7 @@ class GGPR_Admin_View {
         $this->title_section();
         $this->message_section();
         if('main' == $this->current_page){
-                //$this->main_page();
+            $this->main_page();
         }elseif('search' == $this->current_page){
             if('edit' == $this->action){
                 $this->show_edit_page();
@@ -146,7 +147,7 @@ class GGPR_Admin_View {
             
             case 98: $message = $this->get_option('admin_code_changed'); break;
             case 99: $message = $this->get_option('admin_updated_success'); break;
-            case 98: $message = $this->get_option('admin_updated_failed'); break;
+            case 100: $message = $this->get_option('admin_updated_failed'); break;
             
         
             default : $message = '';
@@ -156,6 +157,35 @@ class GGPR_Admin_View {
                     echo '<p>'. $message .'</p>'; 
             echo '</div>';
         }
+    }
+    
+    public function main_page(){
+        $textareas = array('mail_body');
+    ?>
+<div class="ggpr-options-wrap">
+    <form method="post" action="" class="ggpr-options-form">
+        <?php wp_nonce_field('ggpr-actions'); ?>
+         <input type="hidden" name="ggpr_action" value="save_options"/>
+         <div class="ggpr-options-fields-wrap">
+             <?php foreach ($this->options as $key=>$value){ ?>
+             <div class="ggpr-field-wrap ggpr-group">
+                 <label for="<?php echo esc_attr($key); ?>"><?php echo $key ?></label>
+                <div class="ggpr-field">
+                    <?php if(in_array($key, $textareas)){ ?>
+                    <textarea id="<?php echo esc_attr($key); ?>" name="<?php echo esc_attr($key); ?>"><?php echo esc_html($value); ?></textarea>
+                    <?php }else{?>
+                    <input type="text" id="<?php echo esc_attr($key); ?>" name="ggpr_options[<?php echo esc_attr($key); ?>]" value="<?php echo esc_attr($value); ?>"/>
+                    <?php }?>
+                </div>
+            </div>
+            <?php }?>
+            <div class="ggpr-submit-wrap">
+                <input class="ggpr-submit" type="submit" value="<?php echo $this->get_option('submit'); ?>"/>
+            </div> 
+         </div>
+    </form>
+</div>
+    <?php
     }
     
     /**
@@ -289,7 +319,7 @@ class GGPR_Admin_View {
         $entry = new GGPR_Entries();
         $product_data = $entry->get_prodcut_data($_REQUEST['ggpr_code']);
         if(!$product_data){
-            $product_data = $this->search_data();
+            $product_data = $this->search_data;
         }
     ?>
     <div class="ggpr-edit-form-wrap">
@@ -416,6 +446,9 @@ class GGPR_Admin_View {
                     die();
                 }
                 break;
+            case 'save_options':
+                $this->save_options();
+                break;
         }
     }
     
@@ -519,7 +552,7 @@ class GGPR_Admin_View {
         }
         $product_data = array(
             'Name'          => '',
-            'IsUsed'        => 1,
+            'IsUsed'        => 0,
             'Address'       =>'',
             'PostalCode'    =>'',
             'City'          => '',
@@ -533,36 +566,47 @@ class GGPR_Admin_View {
         );
         if(!empty($_POST['ggpr_name'])){
             $product_data['Name'] = $_POST['ggpr_name'];
+            $product_data['IsUsed'] = 1;
         }
         if(!empty($_POST['ggpr_address'])){
             $product_data['Address'] = $_POST['ggpr_address'];
+            $product_data['IsUsed'] = 1;
         }
         if(!empty($_POST['ggpr_post_code'])){
             $product_data['PostalCode'] = $_POST['ggpr_post_code'];
+            $product_data['IsUsed'] = 1;
         }
         if(!empty($_POST['ggpr_city'])){
             $product_data['City'] = $_POST['ggpr_city'];
+            $product_data['IsUsed'] = 1;
         }
-        if(!empty($_POST['ggpr_code'])){
+        if(!empty($_POST['ggpr_country'])){
             $product_data['Country'] = $_POST['ggpr_country'];
+            $product_data['IsUsed'] = 1;
         }
         if(!empty($_POST['ggpr_phone'])){
             $product_data['PhoneNo'] = $_POST['ggpr_phone'];
+            $product_data['IsUsed'] = 1;
         }
         if(!empty($_POST['ggpr_email'])){
             $product_data['EmailAddress'] = $_POST['ggpr_email'];
+            $product_data['IsUsed'] = 1;
         }
         if(!empty($_POST['ggpr_invoice_no'])){
             $product_data['InvoiceNo'] = $_POST['ggpr_invoice_no'];
+            $product_data['IsUsed'] = 1;
         }
         if(!empty($_POST['ggpr_supplier'])){
             $product_data['Supplier'] = $_POST['ggpr_supplier'];
+            $product_data['IsUsed'] = 1;
         }
         if(!empty($_POST['ggpr_dop'])){
             $product_data['DateOfPurchase'] = $_POST['ggpr_dop'];
+            $product_data['IsUsed'] = 1;
         }
         if(!empty($_POST['ggpr_dor'])){
             $product_data['DateOfRegistration'] = $_POST['ggpr_dor'];
+            $product_data['IsUsed'] = 1;
         }
         $entry = new GGPR_Entries();
         
@@ -597,12 +641,29 @@ class GGPR_Admin_View {
         );
         $entry = new GGPR_Entries();
         if($entry->save_product_data($_REQUEST['ggpr_code'], $product_data)){
-            wp_redirect(add_query_arg(array('message'=>93, 'ggpr_action'=>'edit','ggpr_code'=>$_GET['ggpr_code']) ,$this->admin_page_url));
-            
+            wp_redirect(add_query_arg(array('message'=>93, 'ggpr_action'=>'edit','ggpr_code'=>$_GET['ggpr_code']) ,$this->admin_page_url));            
             die();
         }
         wp_redirect(add_query_arg('message', 94,$this->admin_page_url));
         die();
+    }
+    
+    public function save_options(){
+        if(!isset($_POST['ggpr_options']) || !is_array($_POST['ggpr_options'])){
+            wp_redirect($this->admin_page_url);
+            die();
+        }
+        $new_options = array();
+        foreach ($this->options as $key=>$val){
+            $new_options[$key] = isset($_POST['ggpr_options'][$key])?$_POST['ggpr_options'][$key]:'';
+        }
+        if(update_option(GGPR_OPTION_NAME, $new_options) || ($new_options == $this->options)){
+            wp_redirect(add_query_arg(array('message'=>99), $this->admin_page_url));
+            die();
+        }else{
+            wp_redirect(add_query_arg(array('message'=>100), $this->admin_page_url));
+            die();
+        }
     }
     
     /**

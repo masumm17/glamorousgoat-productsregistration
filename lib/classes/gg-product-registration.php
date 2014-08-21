@@ -688,7 +688,7 @@ class GG_Product_Registration {
      * Run on plugin deactivation
      */
     function deactivate() {
-        delete_option(GGPR_OPTION_NAME);
+        //delete_option(GGPR_OPTION_NAME);
         do_action( 'ggpr_deactivate' );
     }
 

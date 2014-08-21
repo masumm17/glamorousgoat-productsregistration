@@ -8,6 +8,7 @@ class GGPR_Admin_View {
     public $options;
     public $search_data;
     public $search_results;
+    public $show_search_result;
     /**
      * Constructor of the class
      * Do some inital tasks when instantiated
@@ -36,6 +37,7 @@ class GGPR_Admin_View {
             'RegistrationCode'  => '',
             'Name'          => '',
             'IsUsed'        => '',
+            'NotUsed'       => '',
             'Address'       =>'',
             'PostalCode'    =>'',
             'City'          => '',
@@ -48,6 +50,7 @@ class GGPR_Admin_View {
             'DateOfRegistration'    =>''
         );
         $this->search_results = array();
+        $this->show_search_result = false;
     }
     
     /**
@@ -86,6 +89,9 @@ class GGPR_Admin_View {
                 //$this->main_page();
         }elseif('search' == $this->current_page){
             $this->search_page();
+            if($this->show_search_result){
+                $this->search_result_page();
+            }
         }
         $this->wrap_close();
     }
@@ -134,100 +140,117 @@ class GGPR_Admin_View {
      */
     public function search_page(){
     ?>
-<div class="ggpr-search-form-wrap">
-    <form class="ggpr-search-form" action="" method="post">
-        <?php wp_nonce_field('ggpr-search'); ?>
-        <input type="hidden" name="ggpr_action" value="search"/>
-        <div class="ggpr-search-fields-wrap ggpr-group">
-            <div class="ggpr-col3">
-                <div class="ggpr-field-wrap ggpr-group">
-                    <label for="ggpr_code"><?php echo $this->get_option('regi_code'); ?></label>
-                    <div class="ggpr-field">
-                        <input type="text" id="ggpr_code" name="ggpr_code" value="<?php echo esc_attr($this->search_data['RegistrationCode']); ?>"/>
+    <div class="ggpr-search-form-wrap">
+        <form class="ggpr-search-form" action="" method="post">
+            <?php wp_nonce_field('ggpr-search'); ?>
+            <input type="hidden" name="ggpr_action" value="search"/>
+            <div class="ggpr-search-fields-wrap ggpr-group">
+                <div class="ggpr-col3">
+                    <div class="ggpr-field-wrap ggpr-group">
+                        <label for="ggpr_code"><?php echo $this->get_option('regi_code'); ?></label>
+                        <div class="ggpr-field">
+                            <input type="text" id="ggpr_code" name="ggpr_code" value="<?php echo esc_attr($this->search_data['RegistrationCode']); ?>"/>
+                        </div>
+                    </div>
+                    <div class="ggpr-field-wrap ggpr-group">
+                        <label for="ggpr_name"><?php echo $this->get_option('name'); ?></label>
+                        <div class="ggpr-field">
+                            <input type="text" id="ggpr_name" name="ggpr_name" value="<?php echo esc_attr($this->search_data['Name']); ?>"/>
+                        </div>
+                    </div>
+                    <div class="ggpr-field-wrap ggpr-group">
+                        <label for="ggpr_address"><?php echo $this->get_option('address'); ?></label>
+                        <div class="ggpr-field">
+                            <textarea id="ggpr_address" name="ggpr_address"><?php echo esc_html($this->search_data['Address']); ?></textarea>
+                        </div>
+                    </div>
+                    <div class="ggpr-field-wrap ggpr-group">
+                        <div class="ggpr-col2">
+                            <label for="ggpr_used"><?php echo $this->get_option('is_used'); ?></label>
+                            <div class="ggpr-field">
+                                <input type="checkbox" id="ggpr_used" name="ggpr_used" value="1" <?php checked(1, $this->search_data['IsUsed']); ?>/>
+                            </div>
+                        </div>
+                        <div class="ggpr-col2">
+                            <label for="ggpr_not_used"><?php echo $this->get_option('not_used'); ?></label>
+                            <div class="ggpr-field">
+                                <input type="checkbox" id="ggpr_not_used" name="ggpr_not_used" value="1" <?php checked(1, $this->search_data['NotUsed']); ?>/>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="ggpr-field-wrap ggpr-group">
-                    <label for="ggpr_used"><?php echo $this->get_option('is_used'); ?></label>
-                    <div class="ggpr-field">
-                        <input type="checkbox" id="ggpr_used" name="ggpr_used" value="1" <?php checked(1, $this->search_data['IsUsed']); ?>/>
+                <div class="ggpr-col3">
+                    <div class="ggpr-field-wrap ggpr-group">
+                        <label for="ggpr_post_code"><?php echo $this->get_option('postal_code'); ?></label>
+                        <div class="ggpr-field">
+                            <input type="text" id="ggpr_post_code" name="ggpr_post_code" value="<?php echo esc_attr($this->search_data['PostalCode']); ?>"/>
+                        </div>
+                    </div>
+                    <div class="ggpr-field-wrap ggpr-group">
+                        <label for="ggpr_city"><?php echo $this->get_option('city'); ?></label>
+                        <div class="ggpr-field">
+                            <input type="text" id="ggpr_city" name="ggpr_city" value="<?php echo esc_attr($this->search_data['City']); ?>"/>
+                        </div>
+                    </div>
+                    <div class="ggpr-field-wrap ggpr-group">
+                        <label for="ggpr_country"><?php echo $this->get_option('country'); ?></label>
+                        <div class="ggpr-field">
+                            <input type="text" id="ggpr_country" name="ggpr_country" value="<?php echo esc_attr($this->search_data['Country']); ?>"/>
+                        </div>
+                    </div>
+                    <div class="ggpr-field-wrap ggpr-group">
+                        <label for="ggpr_phone"><?php echo $this->get_option('phone_no'); ?></label>
+                        <div class="ggpr-field">
+                            <input type="text" id="ggpr_phone" name="ggpr_phone" value="<?php echo esc_attr($this->search_data['PhoneNo']); ?>"/>
+                        </div>
+                    </div>
+                    <div class="ggpr-field-wrap ggpr-group">
+                        <label for="ggpr_email"><?php echo $this->get_option('emai'); ?></label>
+                        <div class="ggpr-field">
+                            <input type="text" id="ggpr_email" name="ggpr_email" value="<?php echo esc_attr($this->search_data['EmailAddress']); ?>"/>
+                        </div>
                     </div>
                 </div>
-                <div class="ggpr-field-wrap ggpr-group">
-                    <label for="ggpr_name"><?php echo $this->get_option('name'); ?></label>
-                    <div class="ggpr-field">
-                        <input type="text" id="ggpr_name" name="ggpr_name" value="<?php echo esc_attr($this->search_data['Name']); ?>"/>
+                <div class="ggpr-col3">
+                    <div class="ggpr-field-wrap ggpr-group">
+                        <label for="ggpr_invoice_no"><?php echo $this->get_option('invoice_no'); ?></label>
+                        <div class="ggpr-field">
+                            <input type="text" id="ggpr_invoice_no" name="ggpr_invoice_no" value="<?php echo esc_attr($this->search_data['InvoiceNo']); ?>"/>
+                        </div>
                     </div>
-                </div>
-                <div class="ggpr-field-wrap ggpr-group">
-                    <label for="ggpr_address"><?php echo $this->get_option('address'); ?></label>
-                    <div class="ggpr-field">
-                        <textarea id="ggpr_address" name="ggpr_address"><?php echo esc_html($this->search_data['Address']); ?></textarea>
+                    <div class="ggpr-field-wrap ggpr-group">
+                        <label for="ggpr_supplier"><?php echo $this->get_option('supplier'); ?></label>
+                        <div class="ggpr-field">
+                            <textarea id="ggpr_supplier" name="ggpr_supplier"><?php echo esc_html($this->search_data['Supplier']); ?></textarea>
+                        </div>
                     </div>
+                    <div class="ggpr-field-wrap ggpr-group">
+                        <label for="ggpr_dop"><?php echo $this->get_option('purchase_date'); ?></label>
+                        <div class="ggpr-field">
+                            <input type="text" id="ggpr_dop" name="ggpr_dop" value="<?php echo esc_attr($this->search_data['DateOfPurchase']); ?>" />
+                        </div>
+                    </div>
+                    <div class="ggpr-field-wrap ggpr-group">
+                        <label for="ggpr_dor"><?php echo $this->get_option('regi_date'); ?></label>
+                        <div class="ggpr-field">
+                            <input type="text" id="ggpr_dor" name="ggpr_dor" value="<?php echo esc_attr($this->search_data['DateOfRegistration']); ?>" />
+                        </div>
+                    </div>
+                    <div class="ggpr-submit-wrap">
+                        <input class="ggpr-submit" type="submit" value="<?php echo $this->get_option('admin_search_title'); ?>"/>
+                    </div> 
                 </div>
             </div>
-            <div class="ggpr-col3">
-                <div class="ggpr-field-wrap ggpr-group">
-                    <label for="ggpr_post_code"><?php echo $this->get_option('postal_code'); ?></label>
-                    <div class="ggpr-field">
-                        <input type="text" id="ggpr_post_code" name="ggpr_post_code" value="<?php echo esc_attr($this->search_data['PostalCode']); ?>"/>
-                    </div>
-                </div>
-                <div class="ggpr-field-wrap ggpr-group">
-                    <label for="ggpr_city"><?php echo $this->get_option('city'); ?></label>
-                    <div class="ggpr-field">
-                        <input type="text" id="ggpr_city" name="ggpr_city" value="<?php echo esc_attr($this->search_data['City']); ?>"/>
-                    </div>
-                </div>
-                <div class="ggpr-field-wrap ggpr-group">
-                    <label for="ggpr_country"><?php echo $this->get_option('country'); ?></label>
-                    <div class="ggpr-field">
-                        <input type="text" id="ggpr_country" name="ggpr_country" value="<?php echo esc_attr($this->search_data['Country']); ?>"/>
-                    </div>
-                </div>
-                <div class="ggpr-field-wrap ggpr-group">
-                    <label for="ggpr_phone"><?php echo $this->get_option('phone_no'); ?></label>
-                    <div class="ggpr-field">
-                        <input type="text" id="ggpr_phone" name="ggpr_phone" value="<?php echo esc_attr($this->search_data['PhoneNo']); ?>"/>
-                    </div>
-                </div>
-                <div class="ggpr-field-wrap ggpr-group">
-                    <label for="ggpr_email"><?php echo $this->get_option('emai'); ?></label>
-                    <div class="ggpr-field">
-                        <input type="text" id="ggpr_email" name="ggpr_email" value="<?php echo esc_attr($this->search_data['EmailAddress']); ?>"/>
-                    </div>
-                </div>
-            </div>
-            <div class="ggpr-col3">
-                <div class="ggpr-field-wrap ggpr-group">
-                    <label for="ggpr_invoice_no"><?php echo $this->get_option('invoice_no'); ?></label>
-                    <div class="ggpr-field">
-                        <input type="text" id="ggpr_invoice_no" name="ggpr_invoice_no" value="<?php echo esc_attr($this->search_data['InvoiceNo']); ?>"/>
-                    </div>
-                </div>
-                <div class="ggpr-field-wrap ggpr-group">
-                    <label for="ggpr_supplier"><?php echo $this->get_option('supplier'); ?></label>
-                    <div class="ggpr-field">
-                        <textarea id="ggpr_supplier" name="ggpr_supplier"><?php echo esc_html($this->search_data['Supplier']); ?></textarea>
-                    </div>
-                </div>
-                <div class="ggpr-field-wrap ggpr-group">
-                    <label for="ggpr_dop"><?php echo $this->get_option('purchase_date'); ?></label>
-                    <div class="ggpr-field">
-                        <input type="text" id="ggpr_dop" name="ggpr_dop" value="<?php echo esc_attr($this->search_data['DateOfPurchase']); ?>" />
-                    </div>
-                </div>
-                <div class="ggpr-field-wrap ggpr-group">
-                    <label for="ggpr_dor"><?php echo $this->get_option('regi_date'); ?></label>
-                    <div class="ggpr-field">
-                        <input type="text" id="ggpr_dor" name="ggpr_dor" value="<?php echo esc_attr($this->search_data['DateOfRegistration']); ?>" />
-                    </div>
-                </div>
-                <div class="ggpr-submit-wrap">
-                    <input class="ggpr-submit" type="submit" value="<?php echo $this->get_option('admin_search_title'); ?>"/>
-                </div> 
-            </div>
-        </div>
-    </form>
+        </form>
+    </div>
+    <?php
+    }
+    
+    public function search_result_page(){
+    ?> 
+<div class="ggpr-search-result">
+    <h3><?php echo $this->get_option('search_results_title'); ?></h3>
+    <?php var_dump($this->search_results); ?>
 </div>
     <?php
     }
@@ -285,6 +308,10 @@ class GGPR_Admin_View {
             $this->search_data['IsUsed'] = 1;
             $do_search = true;
         }
+        if(!empty($_POST['ggpr_not_used'])){
+            $this->search_data['NotUsed'] = 1;
+            $do_search = true;
+        }
         if(!empty($_POST['ggpr_address'])){
             $this->search_data['Address'] = $_POST['ggpr_address'];
             $do_search = true;
@@ -331,8 +358,9 @@ class GGPR_Admin_View {
             die();
         }
         // Get results
+        $this->show_search_result = true;
         $this->search_results = $entry->search($this->search_data);
-        
+        return true;
     }
     
     /**

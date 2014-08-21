@@ -1,5 +1,15 @@
 (function($){GGPROptions;
     $(document).ready(function(){
+        $('#ggpr_used').click(function(){
+            if($(this).is(':checked')){
+                $('#ggpr_not_used').prop( "checked", false );
+            }
+        });
+        $('#ggpr_not_used').click(function(){
+            if($(this).is(':checked')){
+                $('#ggpr_used').prop( "checked", false );
+            }
+        });
         $('.ggpr-search-form').submit(function(e){
             //e.preventDefault();
             var submit = false,

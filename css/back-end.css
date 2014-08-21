@@ -8,6 +8,17 @@
     display: table;
     clear: both;
 }
+
+.ggpr-col2{
+    box-sizing: border-box;
+    margin-right: 2%;
+    width: 49%;
+    float: left;
+}
+.ggpr-col2:nth-child(2n){
+    margin-right: 0;
+}
+
 .ggpr-col3{
     box-sizing: border-box;
     margin-right: 2%;

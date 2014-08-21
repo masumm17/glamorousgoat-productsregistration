@@ -625,7 +625,8 @@ class GG_Product_Registration {
     public function default_options(){
         return array(
             'regi_code'             => __("Registration Code", 'wpml_theme'),
-            'is_used'               => __("Is Used", 'wpml_theme'),
+            'is_used'               => __("Used", 'wpml_theme'),
+            'not_used'               => __("Not Used", 'wpml_theme'),
             'name'                  => __("Name", 'wpml_theme'),
             'address'               => __("Address", 'wpml_theme'),
             'postal_code'           => __("Postal Code", 'wpml_theme'),

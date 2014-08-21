@@ -3,9 +3,13 @@
 class GGPR_Entries {
     
     
-    public function search($data){
+    public function search($data, $number=100, $offset=0){
         if(!is_array($data))
             return false;
+        
+        if($data['IsUsed'] == $data['NotUsed']){
+            $data['IsUsed'] = $data['NotUsed'] ='';
+        }
         
         global $wpdb;
         $format_values = array();
@@ -14,22 +18,35 @@ class GGPR_Entries {
         foreach ($data as $col_name=>$serach_for){
             if(empty($serach_for))
                 continue;
-            if('IsUsed' == $col_name){
+            if(('IsUsed' == $col_name) || ('NotUsed' == $col_name)){
                 $place_holders[] = "(prc.IsUsed=%d)";
             }else{
                 $place_holders[] = "(prc.{$col_name}=%s)";
             }
-            $format_values[] = $serach_for;
+            if('IsUsed' == $col_name){
+                $format_values[] = 1;
+            }elseif('NotUsed' == $col_name){
+                $format_values[] = 0;
+            }else{
+                $format_values[] = $serach_for;
+            }
         }
         if(empty($format_values))
             return false;
+        
         $place_holders = implode(' AND ', $place_holders);
         $where = " WHERE (1=1) AND " . $place_holders;
-        $query = "SELECT prc.* FROM ". GGPR_TABLE_NAME ." AS prc " . $where;
-        var_dump($query);
+        $limit = " LIMIT {$offset}, {$number}";
+        
+        $query = "SELECT prc.* FROM ". GGPR_TABLE_NAME ." AS prc " . $where . $limit;
+        
+        // Prepare query sql
         $query = $wpdb->prepare($query, $format_values);
-        var_dump($query);die();
-        $results = $wpdb->get_col($query);
+        
+        $results = $wpdb->get_results($query);
+        if(empty($results))
+            return false;
+        return $results;
     }
 
     public function get_product_data($col_search = array()){

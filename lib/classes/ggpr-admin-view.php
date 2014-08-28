@@ -7,8 +7,10 @@ class GGPR_Admin_View {
     
     public $options;
     public $search_data;
+    public $supplier_data;
     public $search_results;
     public $show_search_result;
+    public $inpage_message_code;
     /**
      * Constructor of the class
      * Do some inital tasks when instantiated
@@ -46,11 +48,18 @@ class GGPR_Admin_View {
             'EmailAddress'  => '',
             'InvoiceNo'     => '',
             'Supplier'      => '',
+            'ActualSupplier'        => '',
             'DateOfPurchase'        => '',
             'DateOfRegistration'    =>''
         );
+        $this->supplier_data = array(
+            'RegistrationCodeStart'  => '',
+            'RegistrationCodeEnd'          => '',
+            'ActualSupplier'        => ''
+        );
         $this->search_results = array();
         $this->show_search_result = false;
+        $this->inpage_message_code = false;
     }
     
     /**
@@ -60,11 +69,14 @@ class GGPR_Admin_View {
         $query_parts = array();
         if( isset($_REQUEST['page'])){
             if( GGPR_ADMIN_MENU_SLUG == $_REQUEST['page'] ){
-                    $this->current_page = 'main';
-                    $query_parts['page'] = GGPR_ADMIN_MENU_SLUG;
+                $this->current_page = 'main';
+                $query_parts['page'] = GGPR_ADMIN_MENU_SLUG;
+            }elseif(GGPR_ADMIN_SUPPLIERS_SLUG == $_REQUEST['page']){
+                $this->current_page = 'actual_supplier';
+                $query_parts['page'] = GGPR_ADMIN_SUPPLIERS_SLUG;
             }elseif(GGPR_ADMIN_SEARCH_SLUG == $_REQUEST['page']){
-                    $this->current_page = 'search';
-                    $query_parts['page'] = GGPR_ADMIN_SEARCH_SLUG;
+                $this->current_page = 'search';
+                $query_parts['page'] = GGPR_ADMIN_SEARCH_SLUG;
             }
         }
         
@@ -75,7 +87,8 @@ class GGPR_Admin_View {
     * Add a top level admin menu
     */
     public function admin_menu(){
-        add_menu_page( $this->get_option('admin_menu_title'), $this->get_option('admin_menu_title'), 'manage_options', GGPR_ADMIN_MENU_SLUG, array($this, 'admin_menu_page'), 'dashicons-products', '27.75' ); 
+        add_menu_page( $this->get_option('admin_menu_title'), $this->get_option('admin_menu_title'), 'manage_options', GGPR_ADMIN_MENU_SLUG, array($this, 'admin_menu_page'), 'dashicons-products', '27.75' );
+        add_submenu_page( GGPR_ADMIN_MENU_SLUG, $this->get_option('admin_suppliers_title'), $this->get_option('admin_suppliers_title'), 'manage_options', GGPR_ADMIN_SUPPLIERS_SLUG, array($this, 'admin_menu_page') ); 
         add_submenu_page( GGPR_ADMIN_MENU_SLUG, $this->get_option('admin_search_title'), $this->get_option('admin_search_title'), 'manage_options', GGPR_ADMIN_SEARCH_SLUG, array($this, 'admin_menu_page') ); 
     }
     
@@ -88,6 +101,8 @@ class GGPR_Admin_View {
         $this->message_section();
         if('main' == $this->current_page){
             $this->main_page();
+        }elseif('actual_supplier' == $this->current_page){
+            $this->actual_suppliers_page();
         }elseif('search' == $this->current_page){
             if('edit' == $this->action){
                 $this->show_edit_page();
@@ -120,6 +135,8 @@ class GGPR_Admin_View {
     public function title_section(){
         if($this->current_page == 'main'){
             echo '<h2>'. $this->get_option('admin_menu_title') .'</h2>';
+        }elseif($this->current_page == 'actual_supplier'){
+            echo '<h2>'. $this->get_option('admin_suppliers_title') .'</h2>';
         }elseif($this->current_page == 'search'){
             if('edit' == $this->action){
                 echo '<h2>'. $this->get_option('admin_edit_title') .'</h2>';
@@ -133,33 +150,65 @@ class GGPR_Admin_View {
      * Output correct message
      */
     public function message_section(){
-        $message_code = !empty($_GET['message'])?$_GET['message']:0;
+        $message_code = !empty($_GET['message'])?$_GET['message']:$this->inpage_message_code;
         $message = '';
+        $class = '';
         switch($message_code){
             case 92: 
             case 95: 
-            case 97: $message = $this->get_option('admin_empty_code'); break;
+            case 97: 
+                $message = $this->get_option('admin_empty_code'); 
+                $class = ' error';
+                break;
             
-            case 93: $message = $this->get_option('admin_empty_success'); break;
-            case 94: $message = $this->get_option('admin_empty_failed'); break;
+            case 93: 
+                $message = $this->get_option('admin_empty_success'); 
+                break;
+            case 94: 
+                $message = $this->get_option('admin_empty_failed'); 
+                $class = ' error';
+                break;
             
-            case 91: $message = $this->get_option('admin_empty_sf'); break;
+            case 81: 
+                $message = $this->get_option('admin_empty_fields'); 
+                $class = ' error';
+                break;
+            case 82: 
+                $message = $this->get_option('admin_suppliers_added'); 
+                break;
+            
+            case 83: 
+                $message = $this->get_option('regi_code_range_start_ne'); 
+                $class = ' error';
+                break;
+            case 84: 
+                $message = $this->get_option('regi_code_range_end_ne'); 
+                break;
+            
+            case 91: 
+                $message = $this->get_option('admin_empty_sf'); 
+                $class = ' error';
+                break;
             
             case 98: $message = $this->get_option('admin_code_changed'); break;
             case 99: $message = $this->get_option('admin_updated_success'); break;
-            case 100: $message = $this->get_option('admin_updated_failed'); break;
+            case 100: 
+                $message = $this->get_option('admin_updated_failed'); 
+                $class = ' error';
+                break;
             
         
-            default : $message = '';
+            default : $message = '';break;
         }
         if($message){
-            echo '<div id="message" class="updated below-h2">';
+            echo '<div id="message" class="updated below-h2 '. $class .'">';
                     echo '<p>'. $message .'</p>'; 
             echo '</div>';
         }
     }
     
     public function main_page(){
+        $options = wp_parse_args($this->options, ggpr_default_options());
         $textareas = array('mail_body');
     ?>
 <div class="ggpr-options-wrap">
@@ -167,12 +216,12 @@ class GGPR_Admin_View {
         <?php wp_nonce_field('ggpr-actions'); ?>
          <input type="hidden" name="ggpr_action" value="save_options"/>
          <div class="ggpr-options-fields-wrap">
-             <?php foreach ($this->options as $key=>$value){ ?>
+             <?php foreach ($options as $key=>$value){ ?>
              <div class="ggpr-field-wrap ggpr-group">
                  <label for="<?php echo esc_attr($key); ?>"><?php echo $key ?></label>
                 <div class="ggpr-field">
                     <?php if(in_array($key, $textareas)){ ?>
-                    <textarea id="<?php echo esc_attr($key); ?>" name="<?php echo esc_attr($key); ?>"><?php echo esc_html($value); ?></textarea>
+                    <textarea id="<?php echo esc_attr($key); ?>" name="ggpr_options[<?php echo esc_attr($key); ?>]"><?php echo esc_html($value); ?></textarea>
                     <?php }else{?>
                     <input type="text" id="<?php echo esc_attr($key); ?>" name="ggpr_options[<?php echo esc_attr($key); ?>]" value="<?php echo esc_attr($value); ?>"/>
                     <?php }?>
@@ -186,6 +235,46 @@ class GGPR_Admin_View {
     </form>
 </div>
     <?php
+    }
+    
+    /**
+     * Actual Suppliers page
+     */
+    public function actual_suppliers_page(){
+    ?>
+    <div class="ggpr-search-form-wrap">
+        <form class="ggpr-supplier-form" action="" method="post">
+            <?php wp_nonce_field('ggpr-actions'); ?>
+            <input type="hidden" name="ggpr_action" value="add_supplier"/>
+            <div class="ggpr-search-fields-wrap ggpr-group">
+                <div class="ggpr-col3">
+                    <div class="ggpr-field-wrap ggpr-group">
+                        <label for="ggpr_code_start"><?php echo $this->get_option('regi_code_range_start'); ?></label>
+                        <div class="ggpr-field">
+                            <input type="text" id="ggpr_code_start" name="ggpr_code_start" value="<?php echo esc_attr($this->supplier_data['RegistrationCodeStart']); ?>"/>
+                        </div>
+                    </div>
+                    <div class="ggpr-field-wrap ggpr-group">
+                        <label for="ggpr_code_end"><?php echo $this->get_option('regi_code_range_end'); ?></label>
+                        <div class="ggpr-field">
+                            <input type="text" id="ggpr_code_end" name="ggpr_code_end" value="<?php echo esc_attr($this->supplier_data['RegistrationCodeEnd']); ?>"/>
+                        </div>
+                    </div>
+                    <div class="ggpr-field-wrap ggpr-group">
+                        <label for="ggpr_actual_suplier"><?php echo $this->get_option('actual_supplier_field_title'); ?></label>
+                        <div class="ggpr-field">
+                            <input type="text" id="ggpr_actual_suplier" name="ggpr_actual_suplier" value="<?php echo esc_attr($this->supplier_data['ActualSupplier']); ?>"/>
+                        </div>
+                    </div>
+                    <div class="ggpr-submit-wrap">
+                        <input class="ggpr-submit" type="submit" value="<?php echo $this->get_option('submit'); ?>"/>
+                    </div> 
+                </div>
+            </div>
+        </form>
+    </div>
+    <?php
+        
     }
     
     /**
@@ -261,7 +350,13 @@ class GGPR_Admin_View {
                     <div class="ggpr-field-wrap ggpr-group">
                         <label for="ggpr_supplier"><?php echo $this->get_option('supplier'); ?></label>
                         <div class="ggpr-field">
-                            <textarea id="ggpr_supplier" name="ggpr_supplier"><?php echo esc_html($this->search_data['Supplier']); ?></textarea>
+                            <input type="text" id="ggpr_supplier" name="ggpr_supplier" value="<?php echo esc_attr($this->search_data['Supplier']); ?>"/>
+                        </div>
+                    </div>
+                    <div class="ggpr-field-wrap ggpr-group">
+                        <label for="ggpr_actual_supplier"><?php echo $this->get_option('actual_supplier_field_title'); ?></label>
+                        <div class="ggpr-field">
+                            <input type="text" id="ggpr_actual_supplier" name="ggpr_actual_supplier" value="<?php echo esc_attr($this->search_data['ActualSupplier']); ?>"/>
                         </div>
                     </div>
                     <div class="ggpr-field-wrap ggpr-group">
@@ -446,12 +541,18 @@ class GGPR_Admin_View {
                     die();
                 }
                 break;
+            case 'add_supplier':
+                $this->add_supplier();
+                break;
             case 'save_options':
                 $this->save_options();
                 break;
         }
     }
-    
+    /**
+     * 
+     * @return boolean
+     */
     public function search(){
         $entry = new GGPR_Entries();
         $this->search_data = array(
@@ -466,6 +567,7 @@ class GGPR_Admin_View {
             'EmailAddress'  => '',
             'InvoiceNo'     => '',
             'Supplier'      => '',
+            'ActualSupplier'        => '',
             'DateOfPurchase'        => '',
             'DateOfRegistration'    =>''
         );
@@ -517,6 +619,10 @@ class GGPR_Admin_View {
         }
         if(!empty($_POST['ggpr_supplier'])){
             $this->search_data['Supplier'] = $_POST['ggpr_supplier'];
+            $do_search = true;
+        }
+        if(!empty($_POST['ggpr_actual_supplier'])){
+            $this->search_data['ActualSupplier'] = $_POST['ggpr_actual_supplier'];
             $do_search = true;
         }
         if(!empty($_POST['ggpr_dop'])){
@@ -647,14 +753,17 @@ class GGPR_Admin_View {
         wp_redirect(add_query_arg('message', 94,$this->admin_page_url));
         die();
     }
-    
+    /**
+     * Save options
+     */
     public function save_options(){
         if(!isset($_POST['ggpr_options']) || !is_array($_POST['ggpr_options'])){
             wp_redirect($this->admin_page_url);
             die();
         }
+        $options = wp_parse_args($this->options, ggpr_default_options());
         $new_options = array();
-        foreach ($this->options as $key=>$val){
+        foreach ($options as $key=>$val){
             $new_options[$key] = isset($_POST['ggpr_options'][$key])?$_POST['ggpr_options'][$key]:'';
         }
         if(update_option(GGPR_OPTION_NAME, $new_options) || ($new_options == $this->options)){
@@ -676,6 +785,59 @@ class GGPR_Admin_View {
             return $this->options[$key];
         return false;
     }
+    /**
+     * 
+     */
+    public function add_supplier(){
+        $is_set = true;
+        if(!empty($_POST['ggpr_code_start'])){
+            $this->supplier_data['RegistrationCodeStart'] = $_POST['ggpr_code_start'];
+        }else{
+            $is_set = false;
+        }
+        if(!empty($_POST['ggpr_code_end'])){
+            $this->supplier_data['RegistrationCodeEnd'] = $_POST['ggpr_code_end'];
+        }else{
+            $is_set = false;
+        }
+        if(!empty($_POST['ggpr_actual_suplier'])){
+            $this->supplier_data['ActualSupplier'] = $_POST['ggpr_actual_suplier'];
+        }else{
+            $is_set = false;
+        }
+        // Check if every field is empty
+        if(!$is_set){
+            $this->inpage_message_code = 81;
+            return false;
+        }
+        // Save suppliers
+        $entry = new GGPR_Entries();
+        if(!$entry->code_exists($this->supplier_data['RegistrationCodeStart'])){
+            $this->inpage_message_code = 83;
+            return false;
+        }
+        if(!$entry->code_exists($this->supplier_data['RegistrationCodeEnd'])){
+            $this->inpage_message_code = 84;
+            return false;
+        }
+        // Everything is OK
+        // Now save Actual Suppliers
+        $resutl = false;
+        if(strcmp($this->supplier_data['RegistrationCodeStart'], $this->supplier_data['RegistrationCodeEnd']) < 1){
+            $resutl = $entry->set_actual_supplier($this->supplier_data['ActualSupplier'], $this->supplier_data['RegistrationCodeStart'], $this->supplier_data['RegistrationCodeEnd']);
+        }else{
+            $resutl = $entry->set_actual_supplier($this->supplier_data['ActualSupplier'], $this->supplier_data['RegistrationCodeEnd'], $this->supplier_data['RegistrationCodeStart']);
+        }
+        
+        if(!$resutl){
+            wp_redirect(add_query_arg(array('message'=>100), $this->admin_page_url));
+            die();
+        }else{
+            wp_redirect(add_query_arg(array('message'=>82), $this->admin_page_url));
+            die();
+        }
+    }
+    
     /**
      * Enquee admin scripts and styles
      */

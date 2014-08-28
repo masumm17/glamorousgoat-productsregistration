@@ -7,6 +7,7 @@ if(!defined('GGPR_VER_OPTNAME')) define('GGPR_VER_OPTNAME', 'ggpr_version');
 if(!defined('GGPR_OPTION_NAME')) define ('GGPR_OPTION_NAME', 'ggpr_options' );
 
 if(!defined('GGPR_ADMIN_MENU_SLUG')) define ('GGPR_ADMIN_MENU_SLUG', 'gg-product-registration' );
+if(!defined('GGPR_ADMIN_SUPPLIERS_SLUG')) define ('GGPR_ADMIN_SUPPLIERS_SLUG', 'ggpr_actual_suppliers' );
 if(!defined('GGPR_ADMIN_SEARCH_SLUG')) define ('GGPR_ADMIN_SEARCH_SLUG', 'ggpr_search' );
 
 

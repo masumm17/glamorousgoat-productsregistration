@@ -32,6 +32,7 @@ class GGRP_Product_List_Table extends GGPR_List_Table {
         $columns['EmailAddress']        = $this->options['emai'];
         $columns['InvoiceNo']           = $this->options['invoice_no'];
         $columns['Supplier']            = $this->options['supplier'];
+        $columns['ActualSupplier']      = $this->options['actual_supplier_field_title'];
         $columns['DateOfPurchase']      = $this->options['purchase_date'];
         $columns['DateOfRegistration']  = $this->options['regi_date'];
         //You did your part return your outcome
@@ -72,6 +73,7 @@ class GGRP_Product_List_Table extends GGPR_List_Table {
             'EmailAddress'  => '',
             'InvoiceNo'     => '',
             'Supplier'      => '',
+            'ActualSupplier'        => '',
             'DateOfPurchase'        => '',
             'DateOfRegistration'    =>''
         );

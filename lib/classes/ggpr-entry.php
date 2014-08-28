@@ -1,7 +1,12 @@
 <?php
 
 class GGPR_Entries {
-    
+    /**
+     * 
+     * @global obj $wpdb
+     * @param type $code
+     * @return string
+     */
     public function get_prodcut_data($code){
         global $wpdb;
         $query = $wpdb->prepare("SELECT prc.* FROM " . GGPR_TABLE_NAME ." AS prc WHERE (1=1) AND (prc.RegistrationCode=%s)", $code);
@@ -14,6 +19,48 @@ class GGPR_Entries {
             $product_data['DateOfRegistration'] = '';
         }
         return $product_data;
+    }
+    /**
+     * 
+     * @global obj $wpdb
+     * @param type $code
+     * @return boolean
+     */
+    public function get_supplier($code){
+        global $wpdb;
+        $query = $wpdb->prepare("SELECT prc.ActualSupplier FROM " . GGPR_TABLE_NAME ." AS prc WHERE (1=1) AND (prc.RegistrationCode=%s)", $code);
+        $results = $wpdb->get_var($query);
+        if(empty($results))
+            return false;
+        return $results;
+    }
+    /**
+     * 
+     * @global obj $wpdb
+     * @param type $sup
+     * @return int
+     */
+    public function get_suppliers_total($sup){
+        global $wpdb;
+        $query = $wpdb->prepare("SELECT count(prc.ActualSupplier) as total FROM " . GGPR_TABLE_NAME ." AS prc WHERE (1=1) AND (prc.ActualSupplier=%s)", $sup);
+        $results = $wpdb->get_var($query);
+        if(empty($results))
+            return 0;
+        return $results;
+    }
+    /**
+     * 
+     * @global obj $wpdb
+     * @param type $sup
+     * @return int
+     */
+    public function get_suppliers_used($sup){
+        global $wpdb;
+        $query = $wpdb->prepare("SELECT count(prc.ActualSupplier) as total FROM " . GGPR_TABLE_NAME ." AS prc WHERE (1=1) AND (prc.IsUsed=1) AND (prc.ActualSupplier=%s)", $sup);
+        $results = $wpdb->get_var($query);
+        if(empty($results))
+            return 0;
+        return $results;
     }
     
     /**
@@ -172,6 +219,15 @@ class GGPR_Entries {
         $query = "UPDATE " . GGPR_TABLE_NAME ." AS prc " . $set . $where;
         // Prepare the sql for database query
         $query = $wpdb->prepare($query, $format_values);
+        // Get resutls from database
+        return $wpdb->query($query);
+    }
+    
+    public function set_actual_supplier($supplier, $start_code, $end_code){
+        global $wpdb;
+        $query = "UPDATE " . GGPR_TABLE_NAME ." AS prc SET prc.ActualSupplier=%s WHERE (1=1) AND (STRCMP(prc.RegistrationCode,%s)>=0) AND (STRCMP(prc.RegistrationCode,%s)<1)";
+        // Prepare the sql for database query
+        $query = $wpdb->prepare($query, $supplier, $start_code, $end_code);
         // Get resutls from database
         return $wpdb->query($query);
     }

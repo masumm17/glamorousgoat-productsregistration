@@ -29,10 +29,16 @@
             <key name="unknown_error" />
             
             <key name="admin_menu_title" />
+            <key name="admin_suppliers_title" />
             <key name="admin_search_title" />
             <key name="admin_edit_title" />
             <key name="search_by_title" />
             <key name="search_results_title" />
+            <key name="regi_code_range_start" />
+            <key name="regi_code_range_end" />
+            <key name="regi_code_range_start_ne" />
+            <key name="regi_code_range_end_ne" />
+            <key name="actual_supplier_field_title" />
             
             <key name="admin_confirm_text" />
             <key name="admin_confirm" />
@@ -45,6 +51,8 @@
             <key name="admin_empty_code" />
             <key name="admin_empty_sf" />
             <key name="nothing_found" />
+            <key name="admin_empty_fields" />
+            <key name="admin_suppliers_added" />
         </key>
     </admin-texts>  
 </wpml-config>

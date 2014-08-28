@@ -42,6 +42,8 @@ class GG_Product_Registration {
     
     public $sc_atts;
     
+    public $mail_short_tags;
+    
     
     /**
     * The constructor is executed when the class is instatiated and the plugin gets loaded.
@@ -103,6 +105,20 @@ class GG_Product_Registration {
             'Supplier'      => '',
             'DateOfPurchase'        => '',
             'DateOfRegistration'    =>''
+        );
+        
+        $this->mail_short_tags = array(
+            '<RegistrationCode>',
+            '<Name>',
+            '<Address>',
+            '<PostalCode>',
+            '<City>',
+            '<Country>',
+            '<PhoneNo>',
+            '<EmailAddress>',
+            '<InvoiceNo>',
+            '<Supplier>' ,
+            '<DateOfPurchase>'
         );
         
         $this->sc_atts = array();
@@ -312,7 +328,7 @@ class GG_Product_Registration {
                     <div class="ggpr-field-wrap">
                         <label for="ggpr_supplier"><?php echo $this->get_option('supplier'); ?></label>
                         <div class="ggpr-field">
-                            <textarea class="<?php ggpr_conditional_class('ggpr-error', 'ggpr_supplier', $this->error_fields);?>" id="ggpr_supplier" name="ggpr_supplier"><?php echo esc_html($this->product_regi_data['Supplier']); ?></textarea>
+                            <input type="text" class="<?php ggpr_conditional_class('ggpr-error', 'ggpr_supplier', $this->error_fields);?>" id="ggpr_supplier" name="ggpr_supplier" value="<?php echo esc_attr($this->product_regi_data['Supplier']); ?>" />
                         </div>
                     </div>
                     <div class="ggpr-field-wrap">
@@ -441,9 +457,26 @@ class GG_Product_Registration {
             $subject = $this->get_option('mail_subject');
             $message = $this->get_option('mail_body');
             
+            $short_code_replaces = array();
+            $short_code_replaces[] = implode(', ', $this->product_regi_codes);
+            $short_code_replaces[] = $this->product_regi_data['Name'];
+            $short_code_replaces[] = $this->product_regi_data['Address'];
+            $short_code_replaces[] = $this->product_regi_data['PostalCode'];
+            $short_code_replaces[] = $this->product_regi_data['City'];
+            $short_code_replaces[] = $this->product_regi_data['Country'];
+            $short_code_replaces[] = $this->product_regi_data['PhoneNo'];
+            $short_code_replaces[] = $this->product_regi_data['EmailAddress'];
+            $short_code_replaces[] = $this->product_regi_data['InvoiceNo'];
+            $short_code_replaces[] = $this->product_regi_data['Supplier'];
+            $short_code_replaces[] = $this->product_regi_data['DateOfPurchase'];
+            
+            $message = str_replace($this->mail_short_tags, $short_code_replaces, $message);
+            // Data saved succesfully send a confirmation mail to user
             wp_mail($mail_to, $subject, $message, $headers);
             
             // Data saved Successfully.
+            // Check for suppliers margin
+            $this->suppliers_margin();
             // Now time to thanks the user
             if($redirect_url){
                 wp_safe_redirect($redirect_url);
@@ -628,61 +661,53 @@ class GG_Product_Registration {
         return false;
     }
     
+    public function suppliers_margin(){
+        $entry = new GGPR_Entries();
+        $suppliers = array();
+        foreach ($this->product_regi_codes as $code){
+            if($sup = $entry->get_supplier($code))
+                $suppliers[] = $sup;
+        }
+        if(count($suppliers)==0)
+            return false;
+        $suppliers = array_unique($suppliers);
+        $margin_passed = array();
+        $margin = 100 - (int)$this->get_option('suppliers_margin');
+        foreach($suppliers as $sup){
+            $total = $entry->get_suppliers_total($sup);
+            $used  = $entry->get_suppliers_used($sup);
+            $left = $total - $used;
+            $percent = $used*100/$total;
+            $percent = round($percent, 2);
+            if( $percent > $margin){
+                $margin_passed[] = "{$sup}: {$percent}% used. Total: {$total}, Used: {$used}, Left: {$left}";
+            }
+        }
+        
+        if(count($margin_passed)==0)
+            return false;
+        if(count($margin_passed)>1)
+            array_unshift($margin_passed, "The following actual suppliers have almost run out of Registration Codes");
+        else
+            array_unshift($margin_passed, "The following actual supplier has almost run out of Registration Codes");
+        $margin_passed = implode("\r\n", $margin_passed);
+        
+        $mail_to = !empty($this->options['mail_from'])?$this->options['mail_from']:get_option('admin_email');
+        $blog_name = get_bloginfo('name');
+        $headers = "From: {$blog_name}<>" . "\r\n";
+
+        $subject = "Actual Suppliers Run Out Registraion Codes";
+        // Data saved succesfully send a confirmation mail to user
+        wp_mail($mail_to, $subject, $margin_passed, $headers);
+    }
+   
+    
     /**
      * Get Default Options
      * @return array
      */
     public function default_options(){
-        return array(
-            'mail_subject'          => "Product registered!",
-            'mail_body'             => "Thank you for registering your product",
-            'mail_from'             => get_option('admin_email'),
-            
-            'regi_code'             => __("Registration Code", 'wpml_theme'),
-            'is_used'               => __("Used", 'wpml_theme'),
-            'not_used'               => __("Not Used", 'wpml_theme'),
-            'name'                  => __("Name", 'wpml_theme'),
-            'address'               => __("Address", 'wpml_theme'),
-            'postal_code'           => __("Postal Code", 'wpml_theme'),
-            'city'                  => __("City", 'wpml_theme'),
-            'country'               => __("Country", 'wpml_theme'),
-            'phone_no'              => __("Phone No.", 'wpml_theme'),
-            'emai'                  => __("Email Address", 'wpml_theme'),
-            'invoice_no'            => __("Invoice No.", 'wpml_theme'),
-            'supplier'              => __("Supplier", 'wpml_theme'),
-            'purchase_date'         => __("Date of Purchase", 'wpml_theme'),
-            'regi_date'             => __("Date of Registration", 'wpml_theme'),
-            'submit'                => __("Submit", 'wpml_theme'),
-            
-            'no_code_entered'       => __("No product registration code entered.", 'wpml_theme'),
-            'code_empty'            => __("Product registration code fields (highlighted) must not be empty.", 'wpml_theme'),
-            'code_duplicate'        => __("Product registration codes (highlighted) must not be duplicated.", 'wpml_theme'),
-            'code_exist'            => __("Product registration code (highlighted) does not exist.", 'wpml_theme'),
-            'code_used'             => __("Product registration code (highlighted) is used.", 'wpml_theme'),
-            
-            'field_error'           => __("Please fix the highlighted fields", 'wpml_theme'),
-            'bad_email'             => __("Please enter a valid email address", 'wpml_theme'),
-            'bad_phone'             => __("Please enter a valide phone number", 'wpml_theme'),
-            'unknown_error'         => __("Unknown error occured. Pelase try again.", 'wpml_theme'),
-            
-            'admin_menu_title'      => __("Product Registration", 'wpml_theme'),
-            'admin_search_title'    => __("Search", 'wpml_theme'),
-            'admin_edit_title'      => __("Edit Product Registraion Data", 'wpml_theme'),
-            'search_by_title'       => __("Search by any of the following fields", 'wpml_theme'),
-            'search_results_title'  => __("The following Products found", 'wpml_theme'),
-            
-            'admin_confirm_text'    => __("Are you sure you want to edit these values?", 'wpml_theme'),
-            'thanks'                => __("Thank you for rgeistaring your product.", 'wpml_theme'),
-            'admin_updated_success' => __("Saved succesfully!", 'wpml_theme'),
-            'admin_updated_failed'  => __("Data could not be saved. Please try later", 'wpml_theme'),
-            'admin_code_changed'    => __("You can not change the product registration codes.", 'wpml_theme'),
-            'admin_empty_success'   => __("Product registraion code row is emptied succesfully!", 'wpml_theme'),
-            'admin_empty_failed'    => __("Product registraion code row could not be emptied. Please try later", 'wpml_theme'),
-            'admin_empty_code'      => __("No product registraion code found.", 'wpml_theme'),
-            'admin_empty_sf'        => __("You must enter atleast one value.", 'wpml_theme'),
-            'nothing_found'         => __("No data found.'", 'wpml_theme')
-            
-        );
+        return ggpr_default_options();
     }
     
     /**
@@ -710,7 +735,7 @@ class GG_Product_Registration {
      * Run on plugin deactivation
      */
     function deactivate() {
-        delete_option(GGPR_OPTION_NAME);
+        //delete_option(GGPR_OPTION_NAME);
         do_action( 'ggpr_deactivate' );
     }
 
